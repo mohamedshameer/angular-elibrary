@@ -1,3 +1,32 @@
-<h1>
-  {{title}}
-</h1>
+<div class="loader"></div>
+<div id="myDiv">
+<!--HEADER-->
+<div class="header img-responsive">
+  <div class="bg-color">
+    <header id="main-header">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <a class="icon-bar"></a><a class="icon-bar"></a><a class="icon-bar"></a>
+              </button>
+          <a class="navbar-brand" href="#">E<span class="logo-dec">Library</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="hidden-xs"><a href="/">Home</a></li>
+            <li class="hidden-xs"><a href="/profile" [routerLink]="['/profile']">Profile</a></li>
+            <li class="hidden-xs"><a href="/library" [routerLink]="['/library']">Library</a></li>
+            <li class="hidden-xs"><a href="#">Signin</a></li>
+            <li class="active visible-xs" data-toggle="collapse" data-target=".navbar-collapse"><a href="/">Home</a></li>
+            <li class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse"><a href="/profile" [routerLink]="['/profile']">Profile</a></li>
+            <li class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse"><a href="/library" [routerLink]="['/library']">Library</a></li>
+            <li class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse"><a href="#">Signin</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    </header>
+  </div>
+</div>
+<router-outlet></router-outlet>

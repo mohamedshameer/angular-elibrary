@@ -10,6 +10,7 @@ export class SearchFilterPipe implements PipeTransform {
     if (!books || !filter) {
       return books;
     }
-    return books.filter(book => (book.author.indexOf(filter) !== -1) || (book.name.indexOf(filter) !== -1));
+    return books.filter(book => (book.author.indexOf(filter) !== -1) || (book.title.indexOf(filter) !== -1)
+     || (book.user != null && book.user.indexOf(filter) !== -1) || (book.dateOfIssue != null && book.dateOfIssue.indexOf(filter) !== -1));
   }
 }

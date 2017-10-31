@@ -41,7 +41,13 @@ module.exports = {
 
   entry: {
     'polyfills':'./src/polyfills.ts',
-    'main':'./src/main.ts' // our angular app
+    'main':'./src/main.ts' ,
+    vendors: [
+      'angular-material',
+    ],
+    app: [
+      'styles.css'
+    ]
   },
 
   // Config for our build files
@@ -56,6 +62,10 @@ module.exports = {
     cache: false,
     // ensure loader extensions match
     extensions: prepend(['.ts','.js','.json','.css','.html'], '.async') // ensure .async.ts etc also works
+    modulesDirectories: [
+      'node_modules',
+      'src',
+    ]
   },
 
   module: {

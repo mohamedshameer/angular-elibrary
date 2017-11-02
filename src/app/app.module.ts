@@ -11,6 +11,7 @@ import { routing } from './app.route';
 import { AppComponent } from './app.component';
 import { ProfileComponent } from './profile/profile.component';
 import { MdlSelectModule } from '@angular2-mdl-ext/select';
+import { OAuthService } from 'angular2-oauth2/oauth-service';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import { MdlSelectModule } from '@angular2-mdl-ext/select';
     MdlModule,
     MdlSelectModule,
   ],
-  providers: [],
+  providers: [OAuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

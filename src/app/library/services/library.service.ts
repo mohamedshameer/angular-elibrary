@@ -6,7 +6,6 @@ declare var firebase: any;
 @Injectable()
 export class LibraryService {
   numberofDays = 7;
-
   addNewBook(book: Book) {
     var ref = firebase.database().ref('/');
     ref.child("books").child(book.isbn).set(book);

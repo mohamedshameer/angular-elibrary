@@ -6,15 +6,15 @@ import { Pipe, PipeTransform, Injectable } from '@angular/core';
 
 export class SortBooksPipe implements PipeTransform {
 
-  transform(books: any[], filter: any): any {
+  transform(books: any[], filter: string): any {
     if (!books || !filter) {
       return books;
     }
     books.sort((a: any, b: any) => {
-        console.log(a.author);
-        if (a.filter < b.filter ){
+        console.log(a[filter]);
+        if (a[filter] < b[filter] ){
             return -1;
-        }else if( a.filter > b.filter ){
+        }else if( a[filter] > b[filter] ){
             return 1;
         }else{
             return 0;

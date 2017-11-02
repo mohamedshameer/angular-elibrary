@@ -1,7 +1,9 @@
+import { Http, Response } from '@angular/http';
+
 import { LibraryService } from './services/library.service';
 import { Book } from './model/book';
 import { Component, OnInit } from '@angular/core';
-import './sass/library.component.scss';
+import 'rxjs/add/operator/map';
 declare var firebase: any;
 
 @Component({
@@ -22,11 +24,12 @@ export class LibraryComponent implements OnInit {
   public copies: any;
   public title: any;
   public filter: any;
-  public sortDropdown: any;
+  public sortDropdown: string;
   public sortList = [{ "name": "Title", "value": "title" },
   { "name": "Author", "value": "author" }, { "name": "UserName", "value": "user" }, { "name": "Issued Date", "value": "dateOfIssue" }]
 
-  constructor(public libraryservice: LibraryService) { }
+  constructor(public libraryservice: LibraryService , private _http : Http) { }
+
   ngOnInit() {
     var ref = firebase.database().ref('/');
     ref.child("books").once('value', (snapshot) => {
@@ -37,7 +40,8 @@ export class LibraryComponent implements OnInit {
       console.log(this.books);
     });
     this.getRenewBooks();
-
+    var a = this._http.get("http://127.0.0.1:3000/").map((res:Response) => res.json());
+    console.log(a);
   }
 
   addBook(copies: any, name: any, isbn: any, author: any) {

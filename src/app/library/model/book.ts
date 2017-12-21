@@ -1,8 +1,8 @@
 export class Book {
   author: string;
   category: string;
-  copiesAvailable: string;
-  isbn: string;
+  copiesAvailable: any;
+  isbn: any;
   title: string;
 
   constructor(author : any , category: any , title:any, isbn : any , copiesAvailable : any){

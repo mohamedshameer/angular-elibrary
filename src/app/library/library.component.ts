@@ -1,9 +1,7 @@
-import { Http, Response } from '@angular/http';
-
 import { LibraryService } from './services/library.service';
 import { Book } from './model/book';
 import { Component, OnInit } from '@angular/core';
-import 'rxjs/add/operator/map';
+import { CookieService } from 'angular2-cookie/core';
 declare var firebase: any;
 
 @Component({
@@ -15,7 +13,7 @@ declare var firebase: any;
 
 export class LibraryComponent implements OnInit {
   books: any = [];
-  renewBooks = [];
+  renewBooks: any = [];
   public searchBox: string;
   public bookSearch: string;
   public isbnValue: string;
@@ -25,48 +23,40 @@ export class LibraryComponent implements OnInit {
   public title: any;
   public filter: any;
   public sortDropdown: string;
+  public filterDropdown: string;
+  public profile: any;
   public sortList = [{ "name": "Title", "value": "title" },
-  { "name": "Author", "value": "author" }, { "name": "UserName", "value": "user" }, { "name": "Issued Date", "value": "dateOfIssue" }]
+  { "name": "Author", "value": "author" }, { "name": "UserName", "value": "user" }, { "name": "Issued Date", "value": "dateOfIssue" }];
+  public filterList = ["Computers", "Technology", "Fiction", "Science"];
 
-  constructor(public libraryservice: LibraryService , private _http : Http) { }
+  constructor(public libraryservice: LibraryService, private _cookieService: CookieService) { }
 
   ngOnInit() {
     var ref = firebase.database().ref('/');
     ref.child("books").once('value', (snapshot) => {
-      console.log(snapshot.val());
       snapshot.forEach(snap => {
         this.books.push(snap.val());
       });
-      console.log(this.books);
     });
     this.getRenewBooks();
-    var a = this._http.get("http://127.0.0.1:3000/").map((res:Response) => res.json());
-    console.log(a);
+    var data = this._cookieService.get('profile');
+    this.profile = JSON.parse(data);
   }
 
-  addBook(copies: any, name: any, isbn: any, author: any) {
-    var ref = firebase.database().ref('/');
-    var issueDate = new Date();
-    var renewByDate = new Date();
-    renewByDate.setDate(issueDate.getDate() + this.libraryservice.numberofDays);
-    var getBook = "user : shameer" + ",name:" + name + ",dateOfIssue:" + issueDate.toLocaleDateString('en-GB') + ",renewBy:" + renewByDate.toLocaleDateString('en-GB');
-    console.log(getBook);
-    ref.child("renew").push({ "user": "admin", "title": name, "dateOfIssue": issueDate.toLocaleDateString('en-GB'), "renewBy": renewByDate.toLocaleDateString('en-GB'), "isbn": isbn, "author": author });
-    ref.child("books/" + isbn).update({ "copiesAvailable": copies - 1 });
-    //alert("Book successfully claimed");
-    //this.renewBooks.push(book);
-
+  getLibraryBook(book: Book) {
+    var renewBook = this.libraryservice.getLibraryBook(book);
+    this.renewBooks.push(renewBook);
+    this.libraryservice.updateCopiesAvailable(book.isbn, -1, this.books);
   }
+
   getRenewBooks() {
     var ref = firebase.database().ref('/');
     ref.child("renew").once('value', (snapshot) => {
-      console.log(snapshot.val());
       snapshot.forEach(snap => {
         var data = snap.val();
         data.key = snap.key;
         this.renewBooks.push(data);
       });
-      console.log(this.renewBooks);
     })
   }
 
@@ -75,22 +65,10 @@ export class LibraryComponent implements OnInit {
     this.libraryservice.updateRenewedBook(this.renewBooks, key, nextDate);
   }
 
-  returnBook(key: any, isbn: string) {
-    var ref = firebase.database().ref('/');
-    var book;
-    //ref.child("renew").child(key).remove();
-    ref.child("books").once('value', (snapshot) => {
-      snapshot.forEach(snap => {
-        if (isbn == snap.key) {
-          book = snap.val();
-          console.log(snap.val());
-          console.log(book.author);
-          ref.child("books").child(isbn).update({ "author": book.author, "copiesAvailable": parseInt(book.copiesAvailable) + 1, "isbn": book.isbn, "name": book.name });
-        }
-      });
-
-    });
-    //ref.child("books").child(isbn).update({"author":book.author,"copiesAvailable":parseInt(book.copiesAvailable)+1,"isbn":book.isbn,"name":book.name});
+  returnBook(key: any, isbn: any) {
+    this.libraryservice.returnBook(key, isbn);
+    this.renewBooks = this.libraryservice.deleteRenewedBook(this.renewBooks, key);
+    this.libraryservice.updateCopiesAvailable(isbn, 1, this.books);
   }
   updateCopies(book: any) {
     this.libraryservice.updateBook(book);
@@ -102,7 +80,7 @@ export class LibraryComponent implements OnInit {
   }
   deleteBook(isbn: any) {
     this.libraryservice.deleteBook(isbn);
-    this.libraryservice.updateDeletedBook(this.books, isbn);
+    this.books = this.libraryservice.updateDeletedBook(this.books, isbn);
   }
   searchNewBook() {
     var xmlhttp = new XMLHttpRequest();
@@ -129,5 +107,11 @@ export class LibraryComponent implements OnInit {
     this.author = booksInfo.items[0].volumeInfo.authors[0];
     this.category = booksInfo.items[0].volumeInfo.categories[0];
     this.title = booksInfo.items[0].volumeInfo.title;
+  }
+  clearFilters() {
+    this.filterDropdown = "";
+  }
+  deleteChip() {
+    this.sortDropdown = "";
   }
 }
